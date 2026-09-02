@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Lumon ambient scene-reel screensaver body. Same shape as
+# ~/.local/bin/omarchy-lumon-characters-screensaver (cursor hide, black bg,
+# resize wait, exit on input or focus loss) but the payload is the Python
+# scene reel instead of ttfx or the portrait reel. Chosen at random by
+# omarchy-lumon-screensaver-launch.
+#
+# Knobs: LUMON_SCENE_SECS (seconds per scene, default 45),
+#        LUMON_SCENE_FPS (grid scenes, default 11),
+#        LUMON_SCENE (force one), LUMON_SPEED.
+
+SCENES="$HOME/.config/omarchy/branding/lumon-anims/_scenes.py"
+export COLORTERM="${COLORTERM:-truecolor}"
+
+screensaver_in_focus() {
+  hyprctl activewindow -j | jq -e '.class == "org.omarchy.screensaver"' >/dev/null 2>&1
+}
+
+exit_screensaver() {
+  hyprctl eval 'hl.config({ cursor = { invisible = false } })' &>/dev/null || hyprctl keyword cursor:invisible false &>/dev/null || true
+  [[ -n $SCENES_PID ]] && kill "$SCENES_PID" 2>/dev/null
+  pkill -f '[o]rg.omarchy.screensaver' 2>/dev/null
+  exit 0
+}
+
+trap exit_screensaver SIGINT SIGTERM SIGHUP SIGQUIT
+
+printf '\033]11;rgb:00/00/00\007'   # black background
+printf '\033[2J\033[H'
+
+hyprctl eval 'hl.config({ cursor = { invisible = true } })' &>/dev/null || hyprctl keyword cursor:invisible true &>/dev/null
+
+wait_for_terminal_resize() {
+  local deadline=$((SECONDS + 2))
+  while ((SECONDS < deadline)) && [[ $(stty size 2>/dev/null) == "24 80" ]]; do
+    sleep 0.02
+  done
+}
+wait_for_terminal_resize
+
+if [[ ! -r $SCENES ]] || ! command -v python3 >/dev/null 2>&1; then
+  exit 1
+fi
+
+python3 "$SCENES" &
+SCENES_PID=$!
+
+while kill -0 "$SCENES_PID" 2>/dev/null; do
+  if read -n1 -t 1 || ! screensaver_in_focus; then
+    exit_screensaver
+  fi
+done
+exit_screensaver
