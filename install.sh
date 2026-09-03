@@ -11,6 +11,7 @@ mkdir -p "$BIN"
 install -m 755 bin/omarchy-lumon-screensaver         "$BIN/"
 install -m 755 bin/omarchy-lumon-screensaver-launch  "$BIN/"
 install -m 755 bin/omarchy-lumon-scenes-screensaver  "$BIN/"
+install -m 755 bin/omarchy-lumon-media-playing       "$BIN/"
 
 echo ":: installing assets -> $BRAND"
 mkdir -p "$BRAND/lumon-anims"

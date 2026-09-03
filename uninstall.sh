@@ -9,6 +9,7 @@ BRAND="$HOME/.config/omarchy/branding"
 rm -f "$BIN"/omarchy-lumon-screensaver \
       "$BIN"/omarchy-lumon-screensaver-launch \
       "$BIN"/omarchy-lumon-scenes-screensaver \
+      "$BIN"/omarchy-lumon-media-playing \
       "$BRAND"/screensaver.txt \
       "$BRAND"/lumon-anims/_scenes.py
 # _lumon.py is shared with omarchy-lumon-greeting — leave it if that dir has other files

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Exit 0 if any MPRIS media player is currently "Playing", else exit 1.
+# Used by the Lumon idle plugin to hold the screensaver back while you're
+# watching something.
+#
+# Ignore specific players (substring match on the bus name / player name) with:
+#   LUMON_IDLE_IGNORE_PLAYERS="spotify,mpd"     (comma or space separated)
+# e.g. so background music doesn't count as "in use".
+set -u
+
+IGNORE="${LUMON_IDLE_IGNORE_PLAYERS:-}"
+IGNORE="${IGNORE//,/ }"
+
+ignored() {
+  local name=$1 pat
+  for pat in $IGNORE; do
+    [[ -n $pat && $name == *"$pat"* ]] && return 0
+  done
+  return 1
+}
+
+# Preferred: playerctl (clean). Fallback: busctl (always present with systemd).
+if command -v playerctl >/dev/null 2>&1; then
+  while read -r p; do
+    [[ -z $p ]] && continue
+    ignored "$p" && continue
+    [[ $(playerctl -p "$p" status 2>/dev/null) == Playing ]] && exit 0
+  done < <(playerctl -l 2>/dev/null)
+  exit 1
+fi
+
+while read -r svc; do
+  [[ $svc == org.mpris.MediaPlayer2.* ]] || continue
+  ignored "${svc#org.mpris.MediaPlayer2.}" && continue
+  st=$(busctl --user get-property "$svc" /org/mpris/MediaPlayer2 \
+         org.mpris.MediaPlayer2.Player PlaybackStatus 2>/dev/null)
+  [[ $st == *Playing* ]] && exit 0
+done < <(busctl --user list --no-legend 2>/dev/null | awk '{print $1}')
+exit 1

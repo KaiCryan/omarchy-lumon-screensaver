@@ -2,7 +2,7 @@
 
 *Severance* / Lumon Industries screensavers for [Omarchy](https://omarchy.org).
 
-Three idle-screen "bodies", picked at random each time you go idle:
+Two idle-screen "bodies", picked at random each time you go idle:
 
 | Body | What it is |
 |---|---|
@@ -16,28 +16,45 @@ LUMON_SCREENSAVER=ttfx    omarchy-lumon-screensaver-launch force
 LUMON_SCREENSAVER=scenes  omarchy-lumon-screensaver-launch force
 ```
 
+## Doesn't cover the screen while media is playing
+
+`patch-idle.sh` also teaches the idle service to **hold the screensaver back
+while any MPRIS player is "Playing"** — so it won't drop over a YouTube video or
+a film just because you haven't touched the mouse. It polls every ~10s; when
+playback stops, the screensaver comes up on the next tick.
+
+`omarchy-lumon-media-playing` is the check (uses `playerctl` if present, else
+`busctl`). Exempt specific players so background music doesn't count:
+
+```sh
+# in the idle plugin's environment, or your shell
+LUMON_IDLE_IGNORE_PLAYERS="spotify,mpd"
+```
+
+Auto-**lock** still fires on its own timer regardless of media — this only
+defers the screensaver.
+
 ## Install
 
 ```sh
 git clone https://github.com/KaiCryan/omarchy-lumon-screensaver
 cd omarchy-lumon-screensaver
-./install.sh          # copies the bodies + assets
-./patch-idle.sh       # makes the idle service actually use them
+./install.sh          # copies the bodies + the media check
+./patch-idle.sh       # wires the idle service to use them + media gating
 ```
 
-`patch-idle.sh` clones Omarchy's idle plugin (so `omarchy update` can't revert
-it) and redirects its screensaver launch to `omarchy-lumon-screensaver-launch`.
-It's idempotent.
+`patch-idle.sh` clones Omarchy's idle plugin and applies
+`idle-patch/Service.qml.patch` on top of a pristine copy, so it's safe to re-run
+after `omarchy update`.
 
 ## Tuning
-
-Environment knobs (set in the launcher, your shell, or the idle plugin):
 
 - `LUMON_SCREENSAVER_FRAME_RATE` — ttfx fps (default 20)
 - `LUMON_SCENE_SECS` — seconds per ambient scene (default 45)
 - `LUMON_SCENE_FPS` — fps for the grid scenes (default 11)
 - `LUMON_SCENE` — force one scene: `numbers|corridor|globe|descent|motes|aphorisms|wordmark|clock`
 - `LUMON_SPEED` — global speed multiplier
+- `LUMON_IDLE_IGNORE_PLAYERS` — MPRIS players that don't defer the screensaver
 
 ## Uninstall
 
@@ -51,6 +68,6 @@ omarchy plugin disable <yourname>.idle   # revert the idle wiring
 - `branding/lumon-anims/_lumon.py` is a shared helper, also shipped by
   [omarchy-lumon-greeting](https://github.com/KaiCryan/omarchy-lumon-greeting).
   Installing both is fine — the file is identical.
-- The idle plugin's `Service.qml` is Omarchy's own code; `patch-idle.sh` only
-  changes the one line that names the launch command, rather than vendoring a
-  copy here.
+- `idle-patch/Service.qml.patch` is a diff against Omarchy's own `Service.qml`
+  (that plugin is Omarchy's code) — `patch-idle.sh` applies it rather than
+  vendoring a copy.

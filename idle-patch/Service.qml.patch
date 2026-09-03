@@ -1,0 +1,74 @@
+--- a/Service.qml
++++ b/Service.qml
+@@ -35,6 +35,10 @@
+   property string lastEventAt: ""
+   property var screensaverWindows: ({})
+   property int screensaverWindowCount: 0
++  // true while any MPRIS player is "Playing" — holds the screensaver back
++  // (checked by ~/.local/bin/omarchy-lumon-media-playing)
++  property bool mediaPlaying: false
++  onMediaPlayingChanged: logEvent("media", mediaPlaying ? "playing" : "stopped")
+ 
+   function secondsFromConfig(value, fallback) {
+     return IdleModel.secondsFromConfig(value, fallback)
+@@ -63,9 +67,17 @@
+   }
+ 
+   function launchScreensaver() {
++    // Don't cover the screen while something is playing (YouTube, a film, ...).
++    // Keep the idle cycle alive and re-check shortly; when playback stops the
++    // screensaver comes up on the next tick.
++    if (root.mediaPlaying) {
++      logEvent("screensaver-deferred", "media playing")
++      screensaverMediaRecheck.restart()
++      return
++    }
+     root.screensaverStartedThisCycle = true
+     screensaverLaunchGraceTimer.restart()
+-    runProcess(screensaverProcess, "screensaver", "[[ $(omarchy-shell lock isLocked 2>/dev/null) == \"true\" ]] || omarchy-launch-screensaver")
++    runProcess(screensaverProcess, "screensaver", "[[ $(omarchy-shell lock isLocked 2>/dev/null) == \"true\" ]] || \"$HOME/.local/bin/omarchy-lumon-screensaver-launch\"")
+   }
+ 
+   function lockSystem(reason) {
+@@ -181,6 +193,7 @@
+     return JSON.stringify({
+       enabled: root.idleEnabled,
+       stayAwake: root.stayAwake,
++      mediaPlaying: root.mediaPlaying,
+       stayAwakeStateLoaded: root.stayAwakeStateLoaded,
+       stayAwakeStatePath: root.stayAwakeStatePath,
+       idle: idleMonitor.isIdle,
+@@ -280,6 +293,33 @@
+     }
+   }
+ 
++  // Retry the screensaver launch after playback that deferred it may have stopped.
++  Timer {
++    id: screensaverMediaRecheck
++    interval: 15000
++    repeat: false
++    onTriggered: {
++      if (root.idleEnabled && root.idledThisCycle && !root.screensaverStartedThisCycle)
++        root.launchScreensaver()
++    }
++  }
++
++  // Poll MPRIS players so root.mediaPlaying is always ~10s fresh.
++  Timer {
++    id: mediaPollTimer
++    running: true
++    interval: 10000
++    repeat: true
++    triggeredOnStart: true
++    onTriggered: if (!mediaProbe.running) mediaProbe.running = true
++  }
++
++  Process {
++    id: mediaProbe
++    command: ["bash", "-lc", "$HOME/.local/bin/omarchy-lumon-media-playing"]
++    onExited: function(exitCode, exitStatus) { root.mediaPlaying = (exitCode === 0) }
++  }
++
+   Connections {
+     target: Hyprland
+     function onRawEvent(event) { root.handleHyprlandEvent(event) }
