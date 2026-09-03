@@ -38,7 +38,7 @@
        stayAwakeStateLoaded: root.stayAwakeStateLoaded,
        stayAwakeStatePath: root.stayAwakeStatePath,
        idle: idleMonitor.isIdle,
-@@ -280,6 +293,33 @@
+@@ -280,6 +293,34 @@
      }
    }
  
@@ -65,7 +65,8 @@
 +
 +  Process {
 +    id: mediaProbe
-+    command: ["bash", "-lc", "$HOME/.local/bin/omarchy-lumon-media-playing"]
++    // invoked directly (no wrapper shell) — the script has its own shebang
++    command: [root.home + "/.local/bin/omarchy-lumon-media-playing"]
 +    onExited: function(exitCode, exitStatus) { root.mediaPlaying = (exitCode === 0) }
 +  }
 +
