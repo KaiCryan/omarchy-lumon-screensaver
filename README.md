@@ -1,4 +1,10 @@
 # omarchy-lumon-screensaver
+<!-- lumon-voice:head -->
+```
+░▒▓█  L U M O N   I N D U S T R I E S  █▓▒░
+```
+> *When you step away, the screen keeps a respectful vigil.*
+<!-- /lumon-voice:head -->
 
 <!-- lumon-set:start -->
 > **Part of [Omarchy · Lumon Industries](https://github.com/KaiCryan/omarchy-lumon)** — a whole-system *Severance* theme for Omarchy.
@@ -91,3 +97,14 @@ omarchy plugin disable <yourname>.idle   # revert the idle wiring
 - `idle-patch/Service.qml.patch` is a diff against Omarchy's own `Service.qml`
   (that plugin is Omarchy's code) — `patch-idle.sh` applies it rather than
   vendoring a copy.
+
+---
+
+<div align="center"><sub>
+
+*The work is mysterious and important.*
+
+Part of [Omarchy · Lumon Industries](https://github.com/KaiCryan/omarchy-lumon) · a personal, non-commercial *Severance* tribute · not affiliated with Apple TV+
+
+</sub></div>
+<!-- lumon-voice:footer -->
