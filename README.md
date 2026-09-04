@@ -1,5 +1,7 @@
 # omarchy-lumon-screensaver
 
+> Part of **[Omarchy · Lumon Industries](https://github.com/KaiCryan/omarchy-lumon)** — a whole-system _Severance_ theme for Omarchy. This repo is one piece; the hub links the rest.
+
 *Severance* / Lumon Industries screensavers for [Omarchy](https://omarchy.org).
 
 Two idle-screen "bodies", picked at random each time you go idle:
