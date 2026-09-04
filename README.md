@@ -26,6 +26,16 @@
 </details>
 <!-- lumon-set:end -->
 
+<!-- lumon-media:start -->
+<div align="center">
+
+![The Macrodata Refinement numbers grid, filling the screen](https://github.com/KaiCryan/omarchy-lumon-screensaver/raw/main/docs/numbers.gif)
+
+<sub>The <code>numbers</code> scene, one of eight in the ambient reel. <a href="https://github.com/KaiCryan/omarchy-lumon-screensaver/raw/main/docs/numbers.mp4">Full clip</a> · also ships <a href="https://github.com/KaiCryan/omarchy-lumon-screensaver/raw/main/docs/clock.mp4">clock</a> and <a href="https://github.com/KaiCryan/omarchy-lumon-screensaver/raw/main/docs/motes.mp4">motes</a>.</sub>
+
+</div>
+<!-- lumon-media:end -->
+
 *Severance* / Lumon Industries screensavers for [Omarchy](https://omarchy.org).
 
 Two idle-screen "bodies", picked at random each time you go idle:
