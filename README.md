@@ -96,7 +96,8 @@ after `omarchy update`.
 
 ```sh
 ./uninstall.sh
-omarchy plugin disable <yourname>.idle   # revert the idle wiring
+omarchy plugin disable omarchy.idle   # revert the idle wiring — patch-idle.sh
+                                       # echoes the exact command to run
 ```
 
 ## Notes
