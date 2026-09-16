@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Remove the Lumon screensaver bodies. Does NOT touch the idle plugin clone —
-# disable that with:  omarchy plugin disable <yourname>.idle
+# disable that with:  omarchy plugin disable omarchy.idle
 set -euo pipefail
 
 BIN="$HOME/.local/bin"
@@ -15,4 +15,4 @@ rm -f "$BIN"/omarchy-lumon-screensaver \
 # _lumon.py is shared with omarchy-lumon-greeting — leave it if that dir has other files
 [[ -d "$BRAND/lumon-anims" ]] && [[ -z $(ls -A "$BRAND/lumon-anims" 2>/dev/null) ]] && rmdir "$BRAND/lumon-anims"
 
-echo "Done. If you patched the idle plugin:  omarchy plugin disable <yourname>.idle"
+echo "Done. If you patched the idle plugin:  omarchy plugin disable omarchy.idle"
