@@ -81,7 +81,9 @@ for m in $(hyprctl monitors -j | jq -r '.[] | .name'); do
     hypr_exec alacritty --class=org.omarchy.screensaver --config-file "$OMARCHY_PATH/default/alacritty/screensaver.toml" -e "$SAVER"
     ;;
   *ghostty*)
-    hypr_exec ghostty --class=org.omarchy.screensaver --config-file="$OMARCHY_PATH/default/ghostty/screensaver" --font-size=18 -e "$SAVER"
+    # GSK_RENDERER=cairo: GTK 4.24.1's GPU renderer segfaults drawing outset shadows
+    # (gsk_gpu_globals_op), killing the saver on its first frame. Drop once gtk4 > 4.24.1.
+    hypr_exec env GSK_RENDERER=cairo ghostty --class=org.omarchy.screensaver --config-file="$OMARCHY_PATH/default/ghostty/screensaver" --font-size=18 -e "$SAVER"
     ;;
   *foot*)
     hypr_exec foot --app-id=org.omarchy.screensaver --config="$OMARCHY_PATH/default/foot/screensaver.ini" -e "$SAVER"
